@@ -26,6 +26,9 @@
         "variant": "cpp",
         "memory": "cpp",
         "algorithm": "cpp",
-        "tuple": "cpp"
+        "tuple": "cpp",
+        "cassert": "cpp",
+        "sstream": "cpp",
+        "compare": "cpp"
     }
 }

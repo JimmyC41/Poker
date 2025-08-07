@@ -11,11 +11,16 @@ inline constexpr int NUM_CARDS_IN_DECK = 52;
 
 } // namespace Constants
 
+using DefaultContainer = std::array<Card, Constants::NUM_CARDS_IN_DECK>;
+using DefaultRNG = std::mt19937_64;
+using DefaultSeeder = RandomSeeder<DefaultRNG>;
+using DefaultPolicy = FisherYates;
+
 template<
-    typename Container = std::array<Card, Constants::NUM_CARDS_IN_DECK>,
-    typename RNG = std::mt19937_64,
-    typename Seeder = RandomSeeder<RNG>,
-    typename Policy = FisherYates
+    typename Container = DefaultContainer,
+    typename RNG = DefaultRNG,
+    typename Seeder = DefaultSeeder,
+    typename Policy = DefaultPolicy
 >
     requires DeckConcept<Container, RNG, Seeder, Policy>
 class Deck {
