@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 #include "Card.hpp"
 
-namespace {
-
+using namespace Poker;
 using Poker::Card;
 using CardInfo = std::tuple<Card::Rank, Card::Suit, int, std::string>;
 
@@ -33,5 +32,3 @@ INSTANTIATE_TEST_SUITE_P(AllCards, CardTest, ::testing::Values(
         std::make_tuple(Card::Rank::Ace,   Card::Suit::Hearts,   51, "AH")
     )
 );
-
-}

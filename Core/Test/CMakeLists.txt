@@ -3,11 +3,12 @@ enable_testing()
 
 find_package(GTest REQUIRED)
 
-add_executable(CardTest
+add_executable(AllTests
     CardTest.cpp
+    DeckTest.cpp
 )
 
-target_link_libraries(CardTest
+target_link_libraries(AllTests
     PRIVATE
         MyCore
         MyHeaders
@@ -15,4 +16,4 @@ target_link_libraries(CardTest
 )
 
 include(GoogleTest)
-gtest_discover_tests(CardTest)
+gtest_discover_tests(AllTests)

@@ -9,7 +9,7 @@ namespace Poker {
 
 namespace Constants {
 
-inline constexpr int NUM_SUITS = 4;
+inline constexpr int NUM_SUITS = 4; // Note to self: equivalent to extern inline constexpr
 inline constexpr int NUM_RANKS = 13;
 
 inline constexpr std::array<const char*, NUM_RANKS> RANK_NAMES = {
@@ -30,12 +30,22 @@ public:
         Clubs = 0, Spades, Diamonds, Hearts
     };
 
+    Card() = default;
+
     explicit Card(Rank r, Suit s) noexcept
         : m_mask{uint64_t{1} << bit_index(r, s)} {}
     
     uint64_t mask() const noexcept { return m_mask; }
 
     std::string to_string() const;
+
+    friend bool operator==(const Card& lhs, const Card& rhs) {
+        return lhs.mask() == rhs.mask();
+    }
+
+    friend bool operator<(const Card& lhs, const Card& rhs) {
+        return lhs.mask() < rhs.mask();
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const Card& c) {
         return os << c.to_string();
