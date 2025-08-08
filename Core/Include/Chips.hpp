@@ -7,7 +7,7 @@
 namespace Poker {
 
 struct Chips {
-    explicit Chips(int64_t amount = 0) : m_amount(amount) {
+    explicit constexpr Chips(int64_t amount = 0) : m_amount(amount) {
         assert(amount >= 0);
     }
 

@@ -60,7 +60,7 @@ struct FisherYates {
     
     template<ContainerConcept Container, RNGConcept RNG>
     void operator()(Container& c, RNG& r) const {
-        std::shuffle(std::begin(c), std::end(c), r); // Fisher-Yates shuffles
+        std::shuffle(std::begin(c), std::end(c), r); // Fisher-Yates shuffle
     }
 };
 

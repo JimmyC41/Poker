@@ -1,14 +1,21 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include "Chips.hpp"
 
 namespace Poker {
 
+using PlayerId = int;
+
 class Player {
-    explicit Player(int id) : m_id(id) {}
+public:
+    explicit Player(PlayerId id) : m_id(id) {}
+    PlayerId id() const { return m_id; }
 private:
-    int m_id;
+    PlayerId m_id;
 };
+
+using PlayerPtr = std::unique_ptr<Player>;
 
 }

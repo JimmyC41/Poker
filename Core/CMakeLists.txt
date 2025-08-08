@@ -7,8 +7,16 @@ project(PokerCore
     LANGUAGES CXX
 )
 
-add_subdirectory(Src)
+add_executable(DummyMain
+    main.cpp
+)
+
 add_subdirectory(Include)
+
+target_link_libraries(DummyMain
+    PRIVATE
+        MyHeaders
+)
 
 enable_testing()
 add_subdirectory(Test)

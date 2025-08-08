@@ -6,9 +6,7 @@
 namespace Poker {
 
 namespace Constants {
-
 inline constexpr int NUM_CARDS_IN_DECK = 52;
-
 } // namespace Constants
 
 using DefaultContainer = std::array<Card, Constants::NUM_CARDS_IN_DECK>;
@@ -35,14 +33,32 @@ public:
                 m_cards[idx++] = Card(static_cast<Card::Rank>(r), static_cast<Card::Suit>(s));
             }
         }
+        shuffle();
     }
 
     void shuffle() {
         m_policy(m_cards, m_rng);
     }
 
-    const Container& cards() const {
-        return m_cards;
+    std::vector<Card> cards() const {
+        std::vector<Card> result;
+        for (const auto& card : m_cards) {
+            if (!card.is_empty()) {
+                result.push_back(card);
+            }
+        }
+        return result;
+    }
+
+    std::string to_string() const {
+        std::string result;
+        for (const auto& card : m_cards) {
+            if (!result.empty()) {
+                result += " ";
+            }
+            result += card.to_string();
+        }
+        return result;
     }
 
 private:

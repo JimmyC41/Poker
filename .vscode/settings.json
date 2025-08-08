@@ -29,6 +29,14 @@
         "tuple": "cpp",
         "cassert": "cpp",
         "sstream": "cpp",
-        "compare": "cpp"
+        "compare": "cpp",
+        "vector": "cpp",
+        "unordered_map": "cpp",
+        "map": "cpp",
+        "locale": "cpp",
+        "unordered_set": "cpp",
+        "__locale": "cpp",
+        "iostream": "cpp",
+        "ranges": "cpp"
     }
 }

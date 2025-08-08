@@ -1,42 +1,32 @@
 #pragma once
 
 #include <concepts>
-#include <array>
+#include "Chips.hpp"
 
 namespace Poker {
+
+struct DefaultBlinds {
+    static constexpr Chips small_blind{1};
+    static constexpr Chips big_blind{2};
+};
 
 template<typename T>
 concept ConfigConcept = requires {
     { T::num_players } -> std::convertible_to<std::size_t>;
-
-    typename T::Position;
+    
     typename T::Blinds;
-
-    { T::position_order } -> std::same_as<const std::array<typename T::Position, T::num_players>&>;
+    { T::Blinds::small_blind } -> std::convertible_to<Chips>;
+    { T::Blinds::big_blind } -> std::convertible_to<Chips>;
 };
 
-struct CashGameConfig {
-    static constexpr int num_players = 8;
+struct HeadsUpConfig {
+    static constexpr std::size_t num_players = 2;
+    using Blinds = Poker::DefaultBlinds;
+};
 
-    enum class Position {
-        SB = 0, BB, UTG, UTG1, LJ, HJ, CO, Button
-    };
-
-    struct Blinds {
-        static constexpr int small_blind = 1;
-        static constexpr int big_blind = 2;
-    };
-
-    static constexpr std::array<Position, num_players> position_order{
-        Position::SB,
-        Position::BB,
-        Position::UTG,
-        Position::UTG1,
-        Position::LJ,
-        Position::HJ,
-        Position::CO,
-        Position::Button
-    };
+struct EightMaxConfig {
+    static constexpr std::size_t num_players = 8;
+    using Blinds = Poker::DefaultBlinds;
 };
 
 } // namespace Poker

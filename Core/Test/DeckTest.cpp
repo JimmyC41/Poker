@@ -5,7 +5,7 @@
 
 using namespace Poker;
 
-TEST(DeckTest, AllCardsContained) {
+TEST(Deck, ContainsExpectedCards) {
     Deck<> deck;
     const auto& cards = deck.cards();
     std::set<Card> unique_cards(cards.begin(), cards.end());
@@ -13,10 +13,9 @@ TEST(DeckTest, AllCardsContained) {
     EXPECT_EQ(unique_cards.size(), Constants::NUM_CARDS_IN_DECK);
 }
 
-TEST(DeckTest, Shuffle) {
+TEST(Deck, Shuffle) {
     Deck<> deck;
     constexpr int ITERS = 100;
-
     for (size_t i = 0; i < ITERS; ++i) {
         const auto& x = deck.cards();
         std::vector<Card> before(x.begin(), x.end());

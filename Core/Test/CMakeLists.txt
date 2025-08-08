@@ -10,7 +10,6 @@ add_executable(AllTests
 
 target_link_libraries(AllTests
     PRIVATE
-        MyCore
         MyHeaders
         GTest::gtest_main
 )
