@@ -6,12 +6,25 @@ find_package(GTest REQUIRED)
 add_executable(AllTests
     CardTest.cpp
     DeckTest.cpp
+    TableState/Betting.cpp
+    TableState/PlayerTest.cpp
 )
 
 target_link_libraries(AllTests
     PRIVATE
         MyHeaders
+        MyImpl
         GTest::gtest_main
+)
+
+target_include_directories(AllTests
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_compile_definitions(AllTests
+    PRIVATE
+        TEST_CASES_BETTING_SCENARIOS="${CMAKE_CURRENT_SOURCE_DIR}/TestCases/BettingScenarios"
 )
 
 include(GoogleTest)

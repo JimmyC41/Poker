@@ -8,7 +8,7 @@
 namespace Poker {
 /**
  * Note:
- * A seeder creates a random generation instance.
+ * A seeder creates a random generator instance.
  * A random generator produces a sequence of pseudo-random bits.
  * A policy implements the shuffling using the random generator.
  */

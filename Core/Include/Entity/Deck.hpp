@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Card.hpp"
-#include "Shuffler.hpp"
+#include "DeckConcept.hpp"
 
 namespace Poker {
 
@@ -23,8 +23,9 @@ template<
     requires DeckConcept<Container, RNG, Seeder, Policy>
 class Deck {
 public:
-    Deck() 
+    Deck()
         : m_rng{Seeder{}()}
+        , m_dealt{0}
         , m_policy{}
     {
         int idx = 0;
@@ -36,8 +37,17 @@ public:
         shuffle();
     }
 
+    void reset() {
+        shuffle();
+        m_dealt = 0;
+    }
+
     void shuffle() {
         m_policy(m_cards, m_rng);
+    }
+
+    Card deal() {
+        return m_cards[m_dealt++];
     }
 
     std::vector<Card> cards() const {
@@ -63,6 +73,7 @@ public:
 
 private:
     Container m_cards;
+    std::size_t m_dealt;
     RNG m_rng;
     Policy m_policy;
 };

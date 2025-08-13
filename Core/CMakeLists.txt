@@ -12,10 +12,12 @@ add_executable(DummyMain
 )
 
 add_subdirectory(Include)
+add_subdirectory(Src)
 
 target_link_libraries(DummyMain
     PRIVATE
         MyHeaders
+        MyImpl
 )
 
 enable_testing()

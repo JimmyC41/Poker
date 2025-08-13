@@ -37,6 +37,19 @@
         "unordered_set": "cpp",
         "__locale": "cpp",
         "iostream": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "any": "cpp",
+        "bitset": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "set": "cpp",
+        "stack": "cpp",
+        "list": "cpp",
+        "__bit_reference": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "__tree": "cpp",
+        "forward_list": "cpp",
+        "span": "cpp"
     }
 }

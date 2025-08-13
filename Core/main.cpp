@@ -1,5 +1,6 @@
 #include <iostream>
-#include <Deck.hpp>
+#include "Deck.hpp"
+#include "TableState.hpp"
 
 int main() {
     Poker::Deck<> deck;
