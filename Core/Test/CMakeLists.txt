@@ -4,9 +4,9 @@ enable_testing()
 find_package(GTest REQUIRED)
 
 add_executable(AllTests
-    CardTest.cpp
-    DeckTest.cpp
-    TableState/Betting.cpp
+    Entity/CardTest.cpp
+    Entity/DeckTest.cpp
+    TableState/BettingTest.cpp
     TableState/PlayerTest.cpp
 )
 
@@ -22,8 +22,10 @@ target_include_directories(AllTests
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+# Path to test files
 target_compile_definitions(AllTests
     PRIVATE
+        TEST_CASES_PLAYERS="${CMAKE_CURRENT_SOURCE_DIR}/TestCases/Players"
         TEST_CASES_BETTING_SCENARIOS="${CMAKE_CURRENT_SOURCE_DIR}/TestCases/BettingScenarios"
 )
 

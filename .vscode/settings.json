@@ -51,5 +51,6 @@
         "__tree": "cpp",
         "forward_list": "cpp",
         "span": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

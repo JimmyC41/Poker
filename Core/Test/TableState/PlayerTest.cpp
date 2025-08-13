@@ -1,71 +1,64 @@
 #include <gtest/gtest.h>
+#include <filesystem>
 #include "TableState.hpp"
+#include "Parser.hpp"
 
-using namespace Poker;
 using namespace ::testing;
+using namespace Poker;
+namespace fs = std::filesystem;
 
 using Players = std::initializer_list<PlayerID>;
 using PlayerChipsPair = std::initializer_list<std::pair<PlayerID, Chips>>;
 
-struct PlayerFixture : testing::Test {
-    TableState ts;
-
-    void add_players(PlayerChipsPair p) {
-        for (auto [id, buyin] : p)
-            ts.add_player(id, buyin);
-    }
-    
-    void apply_wagers(PlayerChipsPair p) {
-        for (auto [id, wager] : p)
-            ts.on_player_wager(id, wager);
-    }
-
-    void apply_checks(Players p) {
-        for (auto id : p)
-            ts.on_player_check(id);
+class PlayerFixture : public Parser::FixtureBase<TableState> {
+    void on_step(const Parser::Line& l, TableState& s) override {
+        if (l.m_operation == "ADD") {
+            ASSERT_EQ(l.m_args.size(), 2u);
+            s.add_player(Parser::as_id(l.m_args[0]), Parser::as_chips(l.m_args[1]));
+        }
+        else if (l.m_operation == "REMOVE") {
+            ASSERT_EQ(l.m_args.size(), 1u);
+            s.remove_player(Parser::as_id(l.m_args[0]));
+        }
+        else {
+            FAIL() << "Unknown LINE: " << l.m_operation;
+        }
     }
 
-    void remove_players(Players p) {
-        for (auto id : p)
-            ts.remove_player(id);
-    }
+    void on_expect(const Parser::Line& l, TableState& s) override {
+        ASSERT_GE(l.m_args.size(), 1u) << "EXPECT <WHAT> ...";
+        const auto& what = l.m_args[0];
 
-    void TEST_IS_PLAYER(Players p) {
-        for (auto id : p)
-            EXPECT_TRUE(ts.is_player(id));
-    }
-
-    void TEST_STACKS(PlayerChipsPair p) {
-        for (auto [id, chips] : p)
-            EXPECT_EQ(ts.stack(id), chips);
+        if (what == "IS_PLAYER") {
+            ASSERT_EQ(l.m_args.size(), 3u);
+            EXPECT_EQ(s.is_player(Parser::as_id(l.m_args[1])), Parser::as_bool(l.m_args[2]));
+        }
+        else if (what == "ADD_THROWS") {
+            ASSERT_EQ(l.m_args.size(), 3u);
+            EXPECT_THROW(s.add_player(Parser::as_id(l.m_args[1]), Parser::as_chips(l.m_args[2])), std::runtime_error);
+        }
+        else if (what == "REMOVE_THROWS") {
+            ASSERT_EQ(l.m_args.size(), 2u);
+            EXPECT_THROW(s.remove_player(Parser::as_id(l.m_args[1])), std::runtime_error);
+        }
+        else {
+            FAIL() << "Unknown EXPECT: " << what;
+        }
     }
 };
 
-TEST_F(PlayerFixture, AddPlayerThrows) {
-    ts.add_player(1, Chips{10});
-    EXPECT_THROW(ts.add_player(1, Chips{10}), std::runtime_error);
+class PlayerParamFixture : public PlayerFixture, public WithParamInterface<std::string> {};
+
+TEST_P(PlayerParamFixture, RunScript) {
+    TableState ts;
+    auto steps = Parser::load_file(GetParam());
+    run_script(steps, ts);
 }
 
-TEST_F(PlayerFixture, AddPlayer) {
-    add_players({{1, Chips{10}}, {2, Chips{15}}});
-    EXPECT_TRUE(ts.can_start_hand());
+static const Parser::VecStr kFiles = Parser::list_files(TEST_CASES_PLAYERS); 
 
-    add_players({{3, Chips{20}}, {4, Chips{25}}});
-    TEST_IS_PLAYER({1, 2, 3, 4});
-    TEST_STACKS({{1, Chips{10}}, {2, Chips{15}}, {3, Chips{20}}, {4, Chips{25}}});
-}
-
-TEST_F(PlayerFixture, RemovePlayerThrows) {
-    add_players({{1, Chips{1}}, {2, Chips{1}}});
-    EXPECT_THROW(ts.remove_player(100), std::runtime_error);
-}
-
-TEST_F(PlayerFixture, RemovePlayer) {
-    add_players({{1, Chips{1}}, {2, Chips{1}}});
-    ts.remove_player(2);
-    EXPECT_FALSE(ts.can_start_hand());
-
-    add_players({{3, Chips{1}}, {4, Chips{1}}, {5, Chips{1}}});
-    remove_players({4, 5});
-    TEST_IS_PLAYER({1, 3});
-}
+INSTANTIATE_TEST_SUITE_P(
+    PlayerScripts,
+    PlayerParamFixture,
+    ValuesIn(kFiles)
+);

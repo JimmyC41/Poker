@@ -8,8 +8,8 @@
 
 namespace Parser {
 
-using namespace ::testing;
 namespace fs = std::filesystem;
+
 struct Line;
 
 using VecStr = std::vector<std::string>;
@@ -53,10 +53,10 @@ inline VecLine load_file(const fs::path& p) {
     return all_lines;
 }
 
-inline VecStr list_files(const std::filesystem::path& dir, const char* ext = ".txt") {
+inline VecStr list_files(const fs::path& dir, const char* ext = ".txt") {
     VecStr files;
-    if (std::filesystem::exists(dir)) {
-        for (auto& e : std::filesystem::directory_iterator(dir)) {
+    if (fs::exists(dir)) {
+        for (auto& e : fs::directory_iterator(dir)) {
             if (e.is_regular_file() && e.path().extension() == ext)
                 files.push_back(e.path().string());
         }
@@ -65,15 +65,28 @@ inline VecStr list_files(const std::filesystem::path& dir, const char* ext = ".t
     return files;
 }
 
+static inline Poker::PlayerID as_id(const std::string& s) {
+    return static_cast<Poker::PlayerID>(std::stoll(s));
+}
+
+static inline Poker::Chips as_chips(const std::string& s) {
+    return Poker::Chips{static_cast<std::int64_t>(std::stoll(s))};
+}
+
+static inline bool as_bool(const std::string& s) {
+    return std::stoi(s) != 0;
+}
+
+
 template<class T>
-class FixtureBase : public Test {
+class FixtureBase : public ::testing::Test {
 protected:
     virtual void on_step(const Line& l, T& t) = 0;
     virtual void on_expect(const Line& l, T& t) = 0;
 
     void run_script(const VecLine& lines, T& t) {
         for (const auto& l : lines) {
-            SCOPED_TRACE(Message() << "line" << l.m_line << ": " << l.m_operation);
+            SCOPED_TRACE(testing::Message() << "line" << l.m_line << ": " << l.m_operation);
             if (l.m_operation == "EXPECT")
                 on_expect(l, t);
             else

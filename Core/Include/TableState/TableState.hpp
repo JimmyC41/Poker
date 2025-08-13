@@ -89,8 +89,7 @@ private:
     SeatState& player_state(PlayerID id);
     const SeatState& player_state(PlayerID id) const;
     bool is_in_hand(PlayerID id) const;
-    bool is_live(PlayerID id) const;
-    bool is_active(PlayerID id) const;
+    bool can_act(PlayerID id) const;
     bool has_acted(PlayerID id) const;
     bool bet_matched(PlayerID id) const;
     void assert_bets_accounted() const;

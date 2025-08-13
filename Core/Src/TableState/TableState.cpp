@@ -106,7 +106,7 @@ void TableState::reset_street_action() {
 
 bool TableState::is_action_complete() const {
     int in_hand = 0;
-    int eligible = 0;
+    int can_act = 0;
     int matched = 0;
     int acted = 0;
     
@@ -117,7 +117,7 @@ bool TableState::is_action_complete() const {
         ++in_hand;
 
         if (s.m_all_in) continue;
-        ++eligible;
+        ++can_act;
 
         if (s.m_cur_bet == m_active_bet)
             ++matched;
@@ -126,17 +126,18 @@ bool TableState::is_action_complete() const {
             ++acted;
     }
     
-    // Only 1 player left
+    // All but 1 player has folded
     if (in_hand <= 1) return true;
 
-    // No eligible players left
-    if (eligible == 0) return true;
+    // No more players to act (all have folded or are all in)
+    if (can_act == 0) return true;
 
-    // All eligible must match or fold to outstanding bet
-    if (m_active_bet > Chips{0}) return matched == eligible;
+    // All players that can act must match an active bet
+    if (m_active_bet > Chips{0})
+        return can_act == matched;
 
-    // No outstanding bet, all eligible must acted (checked through)
-    return acted == eligible;
+    // If no active bet, all players that can act must check
+    return can_act == acted;
 }
 
 void TableState::on_player_wager(PlayerID id, Chips amount) {
@@ -176,7 +177,7 @@ void TableState::calculate_pots() {
     std::vector<PlayerWagers> wagers;
     wagers.reserve(m_states.size());
     for (const auto& [id, s] : m_states) {
-        if (is_live(id) && s.m_total_bet > Chips{0}) {
+        if (is_in_hand(id) && s.m_total_bet > Chips{0}) {
             wagers.emplace_back(id, s.m_total_bet);
         }
     }
@@ -282,13 +283,13 @@ bool TableState::bet_matched(PlayerID id) const {
 }
 
 // True if a player is eligible to win the pot
-bool TableState::is_live(PlayerID id) const {
+bool TableState::is_in_hand(PlayerID id) const {
     const auto s = player_state(id);
     return s.m_sitting_in && !s.m_folded;
 }
 
 // True if a player can act
-bool TableState::is_active(PlayerID id) const {
+bool TableState::can_act(PlayerID id) const {
     const auto s = player_state(id);
     return s.m_sitting_in && !s.m_folded && !s.m_all_in;
 }
@@ -313,7 +314,7 @@ void TableState::assert_bets_accounted() const {
 // Returns the smallest total bet among live players
 Chips TableState::min_live_wager() const {
     auto bets = m_states
-            | std::views::filter([this](const auto& kv) { return is_live(kv.first); })
+            | std::views::filter([this](const auto& kv) { return is_in_hand(kv.first); })
             | std::views::values
             | std::views::transform(&SeatState::m_total_bet);
     return std::ranges::min(bets);
