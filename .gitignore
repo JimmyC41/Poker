@@ -1,2 +1,4 @@
 Core/build
 Core/do.sh
+.vscode
+.DS_Store

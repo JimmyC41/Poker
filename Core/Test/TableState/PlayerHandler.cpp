@@ -7,17 +7,17 @@
 #include "Chips.hpp"
 
 using namespace ::testing;
-static std::vector<std::string> k_files = list_files(TEST_CASES_BETTING_SCENARIOS);
-class BettingParamFixture : public TestFixture, public WithParamInterface<std::string> {};
+static std::vector<std::string> k_files = list_files(TEST_CASES_PLAYERS);
+class PlayerParamFixture : public TestFixture, public WithParamInterface<std::string> {};
 
-TEST_P(BettingParamFixture, RunScript) {
+TEST_P(PlayerParamFixture, RunScript) {
     Poker::TableState table(Chips{1}, Chips{2});
     auto steps = load_file(GetParam());
     run_script(steps, table);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    BettingTest,
-    BettingParamFixture,
+    PlayerTest,
+    PlayerParamFixture,
     ValuesIn(k_files)
 );

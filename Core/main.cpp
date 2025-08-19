@@ -1,9 +1,8 @@
 #include <iostream>
-#include "Deck.hpp"
-#include "TableState.hpp"
+#include "Handler.hpp"
 
 int main() {
-    Poker::Deck<> deck;
-    std::cout << deck.to_string();
-    return 0;
+    using namespace Poker;
+    TableState ts(Chips{1}, Chips{2});
+    apply(ts, AddPlayer{1, Chips{10}});
 }

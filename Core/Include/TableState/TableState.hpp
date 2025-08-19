@@ -1,9 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <unordered_map>
 #include <map>
-#include <cstdint>
+#include <optional>
 #include "Chips.hpp"
 #include "Card.hpp"
 #include "Deck.hpp"
@@ -11,12 +10,48 @@
 
 namespace Poker {
 
-using PlayerID = std::uint64_t;
+inline constexpr int NUM_STREETS = 6;
 
-namespace Constants {
-inline constexpr int NUM_FLOP_CARDS = 3;
-inline constexpr int MIN_PLAYERS = 2;
-} // namespace Constants
+enum class Street {
+    Waiting, // No hand in progress
+    Preflop,
+    Flop,
+    Turn,
+    River,
+    Showdown
+};
+
+using PlayerID = std::uint64_t;
+struct SeatState;
+
+struct TableState {
+    explicit TableState(Chips small, Chips big)
+        : m_small{small}
+        , m_big{big} {}
+    
+    // Player management
+    std::vector<PlayerID> m_players;
+    std::map<PlayerID, SeatState> m_states;
+    std::optional<PlayerID> m_small_id{std::nullopt};
+    std::optional<PlayerID> m_big_id{std::nullopt};
+    std::optional<PlayerID> m_to_act{std::nullopt};
+    std::optional<PlayerID> m_button{std::nullopt};
+
+    // Betting action
+    Street m_street{Street::Waiting};
+    Chips m_active_bet{};
+    std::optional<Chips> m_small{std::nullopt};
+    std::optional<Chips> m_big{std::nullopt};
+    std::vector<Pot> m_pots{}; // Calculated after bets are wagered
+    
+    // Dealt cards
+    Deck<> m_deck;
+    std::vector<Card> m_community_cards;
+
+    // Seat accessor
+    SeatState& seat_state(PlayerID id);
+    const SeatState& seat_state(PlayerID id) const;
+};
 
 struct SeatState {
     Chips m_stack{0};
@@ -27,73 +62,15 @@ struct SeatState {
     bool m_folded{false};
     bool m_has_acted{false};
     std::vector<Card> m_hole_cards{};
-
     SeatState(Chips stack) : m_stack(stack) {}
 
-    void on_new_wager(Chips amount);
-    void on_fold();
-    void on_check();
-    void subtract_from_total(Chips amount);
-    void reset_cur_bet();
-    void reset_bets();
-};
+    void act();
+    void fold();
+    void wager(Chips amount);
+    void blind(Chips amount);
 
-class TableState {
-private:
-    static constexpr int MAX_SEATS = 9;
-
-    // Players
-    std::vector<PlayerID> m_players;
-    std::map<PlayerID, SeatState> m_states;
-    std::optional<PlayerID> m_to_act{std::nullopt};
-    std::optional<PlayerID> m_button{std::nullopt};
-
-    // Action
-    Chips m_active_bet{};
-    std::vector<Pot> m_pots{}; // Calculated after bets are wagered
-
-    // Dealing
-    Deck<> m_deck;
-    std::vector<Card> m_community_cards;
-
-public:
-    // Players
-    void add_player(PlayerID id, Chips stack = Chips{0});
-    void remove_player(PlayerID id);
-    void sit_out_player(PlayerID id);
-    void sit_in_player(PlayerID id);
-
-    // Action
     void reset_all_action();
-    void reset_street_action();
-    bool is_action_complete() const;
-    void on_player_wager(PlayerID id, Chips amount);
-    void on_player_fold(PlayerID id);
-    void on_player_check(PlayerID id);
-    void calculate_pots();
-
-    // Dealing
-    void reset_deck();
-    void deal_hole_cards();
-    void deal_flop();
-    void deal_turn_or_river();
-
-    // Const Accessors
-    bool can_start_hand() const;
-    int num_players() const;
-    Chips sum_of_stacks() const;
-    Chips stack(PlayerID id) const;
-    bool is_player(PlayerID id) const;
-
-private:
-    SeatState& player_state(PlayerID id);
-    const SeatState& player_state(PlayerID id) const;
-    bool is_in_hand(PlayerID id) const;
-    bool can_act(PlayerID id) const;
-    bool has_acted(PlayerID id) const;
-    bool bet_matched(PlayerID id) const;
-    void assert_bets_accounted() const;
-    Chips min_live_wager() const;
+    void reset_cur_bet();
 };
 
-}
+} // namespace Poker

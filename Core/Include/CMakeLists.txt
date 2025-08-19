@@ -4,5 +4,6 @@ add_library(MyHeaders INTERFACE)
 target_include_directories(MyHeaders
     INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/Entity
+        ${CMAKE_CURRENT_SOURCE_DIR}/TableState_
         ${CMAKE_CURRENT_SOURCE_DIR}/TableState
 )

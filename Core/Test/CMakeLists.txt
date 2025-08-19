@@ -6,8 +6,8 @@ find_package(GTest REQUIRED)
 add_executable(AllTests
     Entity/CardTest.cpp
     Entity/DeckTest.cpp
+    TableState/PlayerHandler.cpp
     TableState/BettingTest.cpp
-    TableState/PlayerTest.cpp
 )
 
 target_link_libraries(AllTests
